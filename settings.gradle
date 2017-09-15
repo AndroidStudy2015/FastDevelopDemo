@@ -1,0 +1,1 @@
+include ':example', ':fast-compiler', ':fast-annotations', ':fast-core', ':fast-demo'
