@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">FastDevelopDemo</string>
+    <string name="fa_coffe">{fa-coffee}</string>
 </resources>

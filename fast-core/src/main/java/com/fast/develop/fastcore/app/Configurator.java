@@ -1,11 +1,15 @@
 package com.fast.develop.fastcore.app;
 
-import java.util.WeakHashMap;
+import com.joanzapata.iconify.IconFontDescriptor;
+import com.joanzapata.iconify.Iconify;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by apple on 2017/9/15.<br/>
  * Configurator功能：（单例模式，懒汉）<br/>
- *
+ * <p>
  * 1. 初始化所有配置参数map：FAST_CONFIGS <br/>
  * 2. 提供了一系列设置参数值的方法：withApiHost.......，并且将这些参数保存在了map中<br/>
  * 3. 提供了获取参数值得方法：getConfiguation（内部检查，是不是调用了configure，标志是否配置完成）<br/>
@@ -16,7 +20,10 @@ public class Configurator {
     /**
      * FAST_CONFIGS是所有配置字段的map集合，所有的配置文件都存在了这个map中
      */
-    private static final WeakHashMap<String, Object> FAST_CONFIGS = new WeakHashMap<>();
+    private static final HashMap<String, Object> FAST_CONFIGS = new HashMap<>();
+
+
+    private static final ArrayList<IconFontDescriptor> ICONS = new ArrayList<>();
 
     //   ************************************ 单例模式(线程安全的懒汉模式)*********************************
     // 1. 私有构造函数，构造函数里面开始调用时，这时候给CONFIG_READ传递一个false，表示配置还没有完成，
@@ -42,7 +49,7 @@ public class Configurator {
      *
      * @return
      */
-    public static WeakHashMap<String, Object> getFastConfigs() {
+    public static HashMap<String, Object> getFastConfigs() {
 
         return FAST_CONFIGS;
     }
@@ -51,7 +58,17 @@ public class Configurator {
      * 当调用configure时候，这时候给CONFIG_READ传递一个true，表示配置已经完成，
      */
     public final void configure() {
+        initIcons();
         FAST_CONFIGS.put(ConfigType.CONFIG_READ.name(), true);
+    }
+
+    private void initIcons() {
+        if (ICONS.size() > 0) {
+            Iconify.IconifyInitializer initializer = Iconify.with(ICONS.get(0));
+            for (int i = 1; i < ICONS.size(); i++) {
+                Iconify.with(ICONS.get(i));//从1开始初始化，0 在得到initializer时候，已经初始化了
+            }
+        }
     }
 
     /**
@@ -62,6 +79,11 @@ public class Configurator {
      */
     public final Configurator withApiHost(String host) {
         FAST_CONFIGS.put(ConfigType.API_HOST.name(), host);
+        return this;
+    }
+
+    public final Configurator withIcons(IconFontDescriptor descriptor) {
+        ICONS.add(descriptor);
         return this;
     }
 

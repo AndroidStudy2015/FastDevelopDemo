@@ -2,7 +2,7 @@ package com.fast.develop.fastcore.app;
 
 import android.content.Context;
 
-import java.util.WeakHashMap;
+import java.util.HashMap;
 
 /**
  * Created by apple on 2017/9/15.
@@ -18,8 +18,12 @@ public final class Fast {
         return Configurator.getInstace();
     }
 
-    private static WeakHashMap<String, Object> getConfigurations() {
+    private static HashMap<String, Object> getConfigurations() {
 
         return Configurator.getInstace().getFastConfigs();
+    }
+
+    public static Context getApplicationContext(){
+        return Configurator.getInstace().getConfiguation(ConfigType.APPLICATION_CONTEXT);
     }
 }
