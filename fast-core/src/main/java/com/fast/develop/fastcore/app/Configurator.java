@@ -96,7 +96,10 @@ public class Configurator {
     private void checkConfiguration() {
         final boolean isReady = (boolean) FAST_CONFIGS.get(ConfigType.CONFIG_READ.name());
         if (!isReady) {
-            throw new RuntimeException("Configuaition  is  not ready ,call configure first");
+            throw new RuntimeException("***************************************************************************************************************************************************************************\n" +
+                    "请先运行 Fast.init(context).configure()完成配置\n" +
+                    "Configuaition is not ready , call configure first\n" +
+                    "*********************************************************");
         }
     }
 

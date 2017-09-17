@@ -18,12 +18,16 @@ public final class Fast {
         return Configurator.getInstace();
     }
 
-    private static HashMap<String, Object> getConfigurations() {
+    public static HashMap<String, Object> getConfigurations() {
 
         return Configurator.getInstace().getFastConfigs();
     }
 
     public static Context getApplicationContext(){
         return Configurator.getInstace().getConfiguation(ConfigType.APPLICATION_CONTEXT);
+    }
+
+    public static String getApiHost(){
+        return Configurator.getInstace().getConfiguation(ConfigType.API_HOST);
     }
 }
