@@ -6,6 +6,8 @@ import com.joanzapata.iconify.Iconify;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import okhttp3.Interceptor;
+
 /**
  * Created by apple on 2017/9/15.<br/>
  * Configurator功能：（单例模式，懒汉）<br/>
@@ -22,13 +24,13 @@ public class Configurator {
      */
     private static final HashMap<String, Object> FAST_CONFIGS = new HashMap<>();
 
-
+    private static final ArrayList<Interceptor> INTERCEPTORS = new ArrayList<>();
     private static final ArrayList<IconFontDescriptor> ICONS = new ArrayList<>();
 
     //   ************************************ 单例模式(线程安全的懒汉模式)*********************************
     // 1. 私有构造函数，构造函数里面开始调用时，这时候给CONFIG_READ传递一个false，表示配置还没有完成，
     private Configurator() {
-        FAST_CONFIGS.put(ConfigType.CONFIG_READ.name(), false);
+        FAST_CONFIGS.put(ConfigKeys.CONFIG_READ.name(), false);
     }
 
     //2. 私有静态内部类
@@ -59,7 +61,7 @@ public class Configurator {
      */
     public final void configure() {
         initIcons();
-        FAST_CONFIGS.put(ConfigType.CONFIG_READ.name(), true);
+        FAST_CONFIGS.put(ConfigKeys.CONFIG_READ.name(), true);
     }
 
     private void initIcons() {
@@ -78,12 +80,25 @@ public class Configurator {
      * @return
      */
     public final Configurator withApiHost(String host) {
-        FAST_CONFIGS.put(ConfigType.API_HOST.name(), host);
+        FAST_CONFIGS.put(ConfigKeys.API_HOST.name(), host);
         return this;
     }
 
     public final Configurator withIcons(IconFontDescriptor descriptor) {
         ICONS.add(descriptor);
+        return this;
+    }
+
+    public final Configurator withInterceptor(Interceptor interceptor) {
+        INTERCEPTORS.add(interceptor);
+        FAST_CONFIGS.put(ConfigKeys.INTERCEPTOR.name(), INTERCEPTORS);
+        return this;
+    }
+
+
+    public final Configurator withInterceptors(ArrayList<Interceptor> interceptors) {
+        INTERCEPTORS.addAll(interceptors);
+        FAST_CONFIGS.put(ConfigKeys.INTERCEPTOR.name(), INTERCEPTORS);
         return this;
     }
 
@@ -94,7 +109,7 @@ public class Configurator {
      * 没配置完，可能获取到的参数为null
      */
     private void checkConfiguration() {
-        final boolean isReady = (boolean) FAST_CONFIGS.get(ConfigType.CONFIG_READ.name());
+        final boolean isReady = (boolean) FAST_CONFIGS.get(ConfigKeys.CONFIG_READ.name());
         if (!isReady) {
             throw new RuntimeException("***************************************************************************************************************************************************************************\n" +
                     "请先运行 Fast.init(context).configure()完成配置\n" +
@@ -112,7 +127,7 @@ public class Configurator {
      * @return
      */
     @SuppressWarnings("unchecked")
-    public final <T> T getConfiguation(Enum<ConfigType> key) {
+    public final <T> T getConfiguation(Enum<ConfigKeys> key) {
         checkConfiguration();//先检查是否配置完成
         return (T) FAST_CONFIGS.get(key.name());
     }

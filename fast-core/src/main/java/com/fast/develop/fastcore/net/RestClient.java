@@ -7,12 +7,16 @@ import com.fast.develop.fastcore.net.callback.IFailure;
 import com.fast.develop.fastcore.net.callback.IRequest;
 import com.fast.develop.fastcore.net.callback.ISuccess;
 import com.fast.develop.fastcore.net.callback.RequestCallbacks;
+import com.fast.develop.fastcore.net.download.DownloadHandler;
 import com.fast.develop.fastcore.ui.FastLoader;
 import com.fast.develop.fastcore.ui.LoaderStyle;
 
+import java.io.File;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -34,6 +38,11 @@ public class RestClient {
     private final LoaderStyle LOADER_STYLE;
     private final Context CONTEXT;
 
+    private final File FILE;
+
+    private final String DOWNLOAD_DIR;
+    private final String EXTENSION;
+    private final String NAME;
 
     public RestClient(String url, Map<String, Object> params,
                       IRequest request,
@@ -42,8 +51,15 @@ public class RestClient {
                       IError error,
                       RequestBody body,
                       LoaderStyle fastLoaderStyle,
-                      Context context) {
+                      Context context,
+                      File file,
+                      String download_dir,
+                      String extension,
+                      String name) {
         URL = url;
+        DOWNLOAD_DIR = download_dir;
+        EXTENSION = extension;
+        NAME = name;
         PARAMS.putAll(params);
         REQUEST = request;
         SUCCESS = success;
@@ -52,6 +68,8 @@ public class RestClient {
         BODY = body;
         LOADER_STYLE = fastLoaderStyle;
         CONTEXT = context;
+        FILE = file;
+
     }
 
     public static RestClientBuilder builder() {
@@ -62,29 +80,39 @@ public class RestClient {
         final RestService service = RestCreator.getRestService();
 
         Call<String> call = null;
-//        这里可以判断网络不存在，停止请求，弹出吐司
         if (REQUEST != null) {
             REQUEST.onRequestStart();
         }
-
-        if (LOADER_STYLE!=null){
-            FastLoader.showLoading(CONTEXT,LOADER_STYLE);
+//        这里可以判断网络不存在，停止请求，弹出吐司
+//          还可以显示加载圈圈
+        if (LOADER_STYLE != null) {
+            FastLoader.showLoading(CONTEXT, LOADER_STYLE);
         }
         switch (method) {
             case GET:
                 call = service.get(URL, PARAMS);
                 break;
-
             case POST:
                 call = service.post(URL, PARAMS);
                 break;
-
+            case POST_RAW:
+                call = service.postRaw(URL, BODY);
+                break;
             case PUT:
                 call = service.put(URL, PARAMS);
                 break;
-
+            case PUT_RAW:
+                call = service.putRaw(URL, BODY);
+                break;
             case DELETE:
                 call = service.delete(URL, PARAMS);
+                break;
+            case UPLOAD:
+                final RequestBody requestBody =
+                        RequestBody.create(MediaType.parse(MultipartBody.FORM.toString()), FILE);
+                final MultipartBody.Part body =
+                        MultipartBody.Part.createFormData("file", FILE.getName(), requestBody);
+                call = service.upload(URL, body);
                 break;
 
             default:
@@ -112,14 +140,40 @@ public class RestClient {
     }
 
     public final void post() {
-        request(HttpMethod.POST);
+        if (BODY == null) {
+            request(HttpMethod.POST);
+        } else {
+            if (!PARAMS.isEmpty()) {//要使用post_raw的话，一定要是null
+                throw new RuntimeException("要使用post_raw的话，PARAMS一定要是null,params must be null");
+            }
+            request(HttpMethod.POST_RAW);
+        }
+
     }
 
     public final void put() {
-        request(HttpMethod.PUT);
+        if (BODY == null) {
+            request(HttpMethod.PUT);
+        } else {
+            if (!PARAMS.isEmpty()) {
+                throw new RuntimeException("要使用put_raw的话，PARAMS一定要是null,params must be null");
+            }
+            request(HttpMethod.PUT_RAW);
+
+        }
     }
 
     public final void delete() {
         request(HttpMethod.DELETE);
+    }
+
+    public final void upload() {
+        request(HttpMethod.UPLOAD);
+    }
+
+    public final void download() {
+        new DownloadHandler(URL, REQUEST, DOWNLOAD_DIR, EXTENSION, NAME,
+                SUCCESS, FAILURE, ERROR)
+                .handleDownload();
     }
 }

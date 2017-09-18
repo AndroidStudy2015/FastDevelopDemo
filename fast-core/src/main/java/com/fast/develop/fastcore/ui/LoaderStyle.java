@@ -1,7 +1,7 @@
 package com.fast.develop.fastcore.ui;
 
 /**
- * Created by 傅令杰 on 2017/4/2
+ * Created by apple on 2017/4/2
  */
 
 @SuppressWarnings("unused")

@@ -8,6 +8,7 @@ import com.fast.develop.fastcore.net.callback.IRequest;
 import com.fast.develop.fastcore.net.callback.ISuccess;
 import com.fast.develop.fastcore.ui.LoaderStyle;
 
+import java.io.File;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -28,8 +29,15 @@ public class RestClientBuilder {
     private IFailure mIFailure = null;
     private IError mIError = null;
     private RequestBody mRequestBody = null;
+
     private LoaderStyle mFastLoaderStyle = null;
     private Context mContext = null;
+
+    private File mFile = null;
+
+    private String mDownloadDir = null;
+    private String mExtension = null;
+    private String mName = null;
 
     RestClientBuilder() {
 
@@ -53,7 +61,7 @@ public class RestClientBuilder {
     }
 
 
-    public final RestClientBuilder raw(String raw) {
+    public final RestClientBuilder raw(String raw) {//直接传递json
         this.mRequestBody = RequestBody.create(MediaType.parse("application/json;charset=UTF-8"), raw);
         return this;
     }
@@ -85,6 +93,29 @@ public class RestClientBuilder {
         return this;
     }
 
+    public final RestClientBuilder file(File file) {
+        this.mFile = file;
+        return this;
+    }
+
+    public final RestClientBuilder file(String filePath) {
+        this.mFile = new File(filePath);
+        return this;
+    }
+    public final RestClientBuilder name(String name) {
+        this.mName = name;
+        return this;
+    }
+
+    public final RestClientBuilder dir(String dir) {
+        this.mDownloadDir = dir;
+        return this;
+    }
+
+    public final RestClientBuilder extension(String extension) {
+        this.mExtension = extension;
+        return this;
+    }
     public final RestClientBuilder loader(Context context) {
         this.mContext = context;
         this.mFastLoaderStyle = LoaderStyle.BallSpinFadeLoaderIndicator;
@@ -92,6 +123,18 @@ public class RestClientBuilder {
     }
 
     public final RestClient build() {
-        return new RestClient(mUrl, PARAMS, mIRequest, mISuccess, mIFailure, mIError, mRequestBody, mFastLoaderStyle, mContext);
+        return new RestClient(mUrl,
+                PARAMS,
+                mIRequest,
+                mISuccess,
+                mIFailure,
+                mIError,
+                mRequestBody,
+                mFastLoaderStyle,
+                mContext,
+                mFile,
+                mDownloadDir,
+                mExtension,
+                mName);
     }
 }

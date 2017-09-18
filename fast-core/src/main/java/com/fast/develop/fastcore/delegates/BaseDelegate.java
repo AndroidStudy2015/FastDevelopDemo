@@ -2,7 +2,6 @@ package com.fast.develop.fastcore.delegates;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +29,6 @@ public abstract class BaseDelegate extends SwipeBackFragment {
 
         View rootView = null;
         if (setLayout() instanceof Integer) {
-            Log.e("c","===-=-=-=-=-=-=");
             rootView = inflater.inflate((Integer) setLayout(), container, false);
         } else if (setLayout() instanceof View) {
             rootView = (View) setLayout();

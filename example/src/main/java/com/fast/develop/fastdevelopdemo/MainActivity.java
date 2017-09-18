@@ -3,6 +3,7 @@ package com.fast.develop.fastdevelopdemo;
 import com.fast.develop.fastcore.activities.ProxyActivity;
 import com.fast.develop.fastcore.app.Fast;
 import com.fast.develop.fastcore.delegates.FastDelegate;
+import com.fast.develop.fastcore.interceptors.DebugInterceptor;
 import com.fast.develop.fastdemo.icon.FontDemoMoudle;
 import com.joanzapata.iconify.fonts.FontAwesomeModule;
 
@@ -12,6 +13,7 @@ public class MainActivity extends ProxyActivity {
     public FastDelegate setRootDelegate() {
         Fast.init(this)
                 .withApiHost("http://127.0.0.1")
+                .withInterceptor(new DebugInterceptor( "987",R.raw.test))
                 .withIcons(new FontAwesomeModule())
                 .withIcons(new FontDemoMoudle())
                 .configure();
@@ -30,7 +32,7 @@ public class MainActivity extends ProxyActivity {
 //                .configure();
 //
 //
-//        String apihost = Configurator.getInstace().getConfiguation(ConfigType.API_HOST);
+//        String apihost = Configurator.getInstace().getConfiguation(ConfigKeys.API_HOST);
 //        Toast.makeText(Fast.getApplicationContext(), apihost + "", Toast.LENGTH_SHORT).show();
 //
 //    }

@@ -45,6 +45,7 @@ public class FastLoader {
             lp.gravity = Gravity.CENTER;
         }
         LOADERS.add(dialog);
+        dialog.setCanceledOnTouchOutside(false);//点击外部不会取消对话框dialog
         dialog.show();
     }
 

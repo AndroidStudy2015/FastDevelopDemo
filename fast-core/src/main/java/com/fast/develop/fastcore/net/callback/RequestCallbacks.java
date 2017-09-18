@@ -52,7 +52,7 @@ public class RequestCallbacks implements Callback<String> {
                 public void run() {
                     FastLoader.stopLoading();
                 }
-            }, 1000);
+            }, 5000);
         }
     }
 

@@ -26,37 +26,51 @@ public class ExampleDelegate extends FastDelegate {
 
     @Override
     protected void onBindView(@Nullable Bundle savedInstanceState, View rootView) {
-        testRequestClient();
+       rootView.findViewById(R.id.bt).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                testRequestClient();
+
+            }
+        });
     }
 
-
     private void testRequestClient() {
-
-        RestClient.builder().url("https://www.baidu.com").params("", "").loader(getContext()).success(new ISuccess() {
+        String baiduurl = "https://www.baidu.com";
+        String url = "http://27.221.23.220/download.sj.qq.com/upload/connAssitantDownload/upload/MobileAssistant_1.apk?mkey=59bf0f3a440ffe28&f=d488&c=0&p=.apk";
+        String moniUrl = "http://127.0.0.1/index";
+        RestClient.builder().url(baiduurl).params("", "").loader(getContext()).success(new ISuccess() {
             @Override
             public void onSuccess(String response) {
-                Toast.makeText(getContext(), response, Toast.LENGTH_LONG).show();
+//                Toast.makeText(getContext(), response, Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), "成功了" + response, Toast.LENGTH_LONG).show();
+
             }
         }).failure(new IFailure() {
             @Override
             public void onFailure() {
+                Toast.makeText(getContext(), "失败了", Toast.LENGTH_LONG).show();
 
             }
         }).error(new IError() {
             @Override
             public void onError(int code, String msg) {
+                Toast.makeText(getContext(), "错误", Toast.LENGTH_LONG).show();
 
             }
         }).onRequest(new IRequest() {
             @Override
             public void onRequestStart() {
+                Toast.makeText(getContext(), "开始", Toast.LENGTH_LONG).show();
 
             }
 
             @Override
             public void onRequestEnd() {
+                Toast.makeText(getContext(), "结束", Toast.LENGTH_LONG).show();
+
 
             }
-        }).build().get();
+        }).name("a应用宝").extension("apk").build().get();
     }
 }
